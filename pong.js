@@ -2,26 +2,50 @@ function main()
 {
   console.log("Main: Pong")
 
-  //-- Crear el canvas
+  // -- Crear el canvas
   var canvas = document.getElementById('display')
   canvas.width = 600;
   canvas.height = 400;
 
-  //-- Obtener el contexto de canvas
+  // -- Obtener el contexto de canvas
   var ctx = canvas.getContext("2d");
 
+  // -- Obtener el parrafo
+  texto = document.getElementById('texto')
+
+  // -- Funcion de retrollamada de la pulsacion de una tecla
   window.onkeydown = (e) => {
+
+    // -- Eliminar el comportamiento por defecto de la tecla
     e.preventDefault();
     console.log(e.key);
 
+    // -- Detectar la letra
     if (e.key == 'a') {
       console.log ("Tecla A apretada")
+
+      // -- Cambiar el el fondo del texto
+      if (texto.style.backgroundColor == "") {
+        texto.style.backgroundColor = "red"
+      } else {
+        texto.style.backgroundColor = ""
+      }
     }
   }
 
-  //-- Raquetas
-  ctx.fillStyle = 'white';
-  ctx.fillRect(50,50,10,40);
+
+  //-- Definir el objeto RAQUETA
+  var raqueta = {
+    ctx: null,
+    init: function (ctx) {
+      this.ctx = ctx;
+    },
+    draw: function () {
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillRect(50,50,10,40);
+      this.ctx.fillRect(500,350,10,40);
+    }
+  }
 
   //-- Red
   ctx.beginPath();
@@ -70,6 +94,30 @@ function main()
     update: function () {
       this.x += this.vx;
       this.y += this.vy;
+      // -- Pared derecha
+      if (this.x > 600 - 5) {
+        this.x = 600 - 5;
+        this.vx = this.vx * -1;
+        this.vy = this.vy * 1;
+      }
+      // -- Pared izquierda
+      if (this.x < 0 + 5) {
+        this.x = 5;
+        this.vx = this.vx * -1;
+        this.vy = this.vy * 1;
+      }
+      // -- Pared inferior
+      if (this.y > 400 - 5) {
+        this.y = 400 - 5;
+        this.vx = this.vx * 1;
+        this.vy = this.vy * -1;
+      }
+      // -- Pared superior
+      if (this.y < 0 + 5) {
+        this.y = 5;
+        this.vx = this.vx * 1;
+        this.vy = this.vy * -1;
+      }
     },
     //-- Reset
     reset: function() {
@@ -77,14 +125,21 @@ function main()
       this.y = this.y_ini;
     }
   }
-
+  // -- Iniciar y pintar bola y raquetas
   bola.init(ctx);
   bola.draw();
+  raqueta.init(ctx);
+  raqueta.draw(ctx);
 
+  // -- Crear timer para la animacion
+  // -- Inicialmente null
   var timer = null;
 
+  // -- Boton de sacar
   var sacar = document.getElementById('sacar');
 
+  // -- Funcion de retrollamada de boton sacar
+  // -- Comienza la animacion
   sacar.onclick = ()=> {
     console.log("Click")
     // -- Lanzar el timer (si es que no estaba ya lanzado)
@@ -99,15 +154,18 @@ function main()
 
         // -- Dibujar la bola
         bola.draw()
+        raqueta.draw()
+        // -- Si la bola toca un borde
 
         // -- Condicion de terminación
         if (bola.x > canvas.width) {
           clearInterval(timer);
+          timer = null;
           bola.reset();
           bola.draw();
         }
       }, 20);
     }
-  }
+  } // -- Fin onclick
 
 }
