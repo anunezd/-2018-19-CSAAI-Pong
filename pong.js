@@ -10,59 +10,107 @@ function main()
   // -- Obtener el contexto de canvas
   var ctx = canvas.getContext("2d");
 
-  // -- Obtener el parrafo
-  texto = document.getElementById('texto')
-
-  // -- Funcion de retrollamada de la pulsacion de una tecla
-  window.onkeydown = (e) => {
-
-    // -- Eliminar el comportamiento por defecto de la tecla
-    e.preventDefault();
-    console.log(e.key);
-
-    // -- Detectar la letra
-    if (e.key == 'a') {
-      console.log ("Tecla A apretada")
-
-      // -- Cambiar el el fondo del texto
-      if (texto.style.backgroundColor == "") {
-        texto.style.backgroundColor = "red"
-      } else {
-        texto.style.backgroundColor = ""
-      }
-    }
-  }
-
-
-  //-- Definir el objeto RAQUETA
-  var raqueta = {
-    ctx: null,
-    init: function (ctx) {
-      this.ctx = ctx;
-    },
-    draw: function () {
-      this.ctx.fillStyle = 'white';
-      this.ctx.fillRect(50,50,10,40);
-      this.ctx.fillRect(500,350,10,40);
-    }
-  }
-
-  //-- Red
+  function red (){
   ctx.beginPath();
   ctx.strokeStyle = "white";
   ctx.setLineDash([5, 5]);
   ctx.moveTo(canvas.width/2,0);
   ctx.lineTo(canvas.width/2, canvas.height)
   ctx.stroke();
+  }
 
-  //-- Bola
-  ctx.fillRect(350,200, 5,5);
 
+  //-- Definir el objeto RAQUETA
+  var raqueta = {
+    x_ini1: 50,
+    y_ini1: 50,
+    x1: 0,
+    y1:0,
+
+
+    x_ini2: 500,
+    y_ini2: 350,
+    x2:0,
+    y2:0,
+
+    //-- Dimensiones de la raqueta
+    width: 10,
+    height: 40,
+    //-- Velocidad
+    vy1 : 0,
+    vy2 : 0,
+    ctx: null,
+    init: function (ctx) {
+      this.ctx = ctx;
+      this.reset();
+    },
+    draw: function () {
+        this.ctx.fillStyle = 'white';
+        this.ctx.fillRect(this.x1, this.y1, this.width, this.height)
+        this.ctx.fillRect(this.x2, this.y2, this.width, this.height)
+    },
+    //-- Update
+    update: function () {
+      window.onkeydown = (p) => {
+          p.preventDefault();
+          switch (p.key) {
+              case 'w':
+                  this.vy1 = -6;
+                  break;
+              case 's':
+                  this.vy1 = 6;
+                  break;
+              case 'ArrowUp':
+                  this.vy2 = -6;
+                  break;
+              case 'ArrowDown':
+                  this.vy2 = 6;
+                  break;
+              default:
+                  break;
+          }
+      }
+      window.onkeyup = (p) => {
+          p.preventDefault();
+          switch (p.key) {
+              case 'w':
+                  this.vy1 = 0;
+                  break;
+              case 's':
+                  this.vy1 = 0;
+                  break;
+              case 'ArrowUp':
+                  this.vy2 = 0;
+                  break;
+              case 'ArrowDown':
+                  this.vy2 = 0;
+                  break;
+              default:
+                  break;
+          }
+        }
+          this.y1 += this.vy1;
+          if (this.y1 > canvas.height - this.height){
+              this.y1 = canvas.height - this.height;
+          } else if (this.y1 < 0) {
+              this.y1 = 0;
+          }
+          this.y2 += this.vy2;
+          if (this.y2 > canvas.height - this.height){
+              this.y2 = canvas.height - this.height;
+          } else if (this.y2 < 0) {
+              this.y2 = 0;
+          }
+      },
+      reset: function() {
+        this.x1 = this.x_ini1;
+        this.y1 = this.y_ini1;
+        this.x2 = this.x_ini2;
+        this.y2 = this.y_ini2;
+      }
+    }
   //-- Puntuación
-  ctx.font = "80px Arial";
-  ctx.fillStyle = 'white';
-  ctx.fillText("0", 220, 70);
-  ctx.fillText("2", 340, 70);
+
 
   //-- Definir el objeto BOLA
   var bola = {
@@ -99,12 +147,14 @@ function main()
         this.x = 600 - 5;
         this.vx = this.vx * -1;
         this.vy = this.vy * 1;
+        puntuacion.p1 += 1;
       }
       // -- Pared izquierda
       if (this.x < 0 + 5) {
         this.x = 5;
         this.vx = this.vx * -1;
         this.vy = this.vy * 1;
+        puntuacion.p2 += 1;
       }
       // -- Pared inferior
       if (this.y > 400 - 5) {
@@ -125,11 +175,29 @@ function main()
       this.y = this.y_ini;
     }
   }
+
+  var puntuacion = {
+    p1: 0,
+    p2: 0,
+    ctx: null,
+    init: function(ctx) {
+      this.ctx = ctx;
+    },
+    draw: function() {
+      this.ctx.font = "80px Arial";
+      this.ctx.fillStyle = 'white';
+      this.ctx.fillText(this.p1, 220, 70);
+      this.ctx.fillText(this.p2, 340, 70);
+    },
+  }
   // -- Iniciar y pintar bola y raquetas
   bola.init(ctx);
   bola.draw();
   raqueta.init(ctx);
-  raqueta.draw(ctx);
+  raqueta.draw();
+  puntuacion.init(ctx);
+  puntuacion.draw();
+  red();
 
   // -- Crear timer para la animacion
   // -- Inicialmente null
@@ -148,14 +216,15 @@ function main()
         console.log("tic");
         // -- Actualizar la bola
         bola.update()
-
+        raqueta.update()
         // -- Borrar el canvas
         ctx.clearRect(0,0, canvas.width, canvas.height);
 
         // -- Dibujar la bola
         bola.draw()
         raqueta.draw()
-        // -- Si la bola toca un borde
+        puntuacion.draw()
+        red()
 
         // -- Condicion de terminación
         if (bola.x > canvas.width) {
