@@ -1,3 +1,4 @@
+// JS Jorge, divido en funciones
 function campo (w, h){
     this.ctx = null;
     this.width = w;
