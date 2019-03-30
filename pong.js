@@ -102,6 +102,8 @@ function main()
               this.y2 = 0;
           }
       },
+
+
       reset: function() {
         this.x1 = this.x_ini1;
         this.y1 = this.y_ini1;
@@ -167,6 +169,12 @@ function main()
         this.y = 5;
         this.vx = this.vx * 1;
         this.vy = this.vy * -1;
+      }
+      if (this.x < (raqueta.x1 + raqueta.width) && this.y < (raqueta.y1 + raqueta.height) && this.y > raqueta.y1) {
+        this.vx = -this.vx;
+      }
+      if (this.x > raqueta.x2 && this.y < (raqueta.y2 + raqueta.height) && this.y > raqueta.y2) {
+        this.vx = -this.vx
       }
     },
     //-- Reset
