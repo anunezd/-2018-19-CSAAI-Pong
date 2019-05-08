@@ -26,7 +26,6 @@ function main()
     x1: 0,
     y1:0,
 
-
     x_ini2: 500,
     y_ini2: 350,
     x2:0,
@@ -216,14 +215,12 @@ function main()
         this.x = 600 - 5;
         this.vx = this.vx * -1;
         this.vy = this.vy * 1;
-        puntuacion.p1 += 1;
       }
       // -- Pared izquierda
       if (this.x < 0 + 5) {
         this.x = 5;
         this.vx = this.vx * -1;
         this.vy = this.vy * 1;
-        puntuacion.p2 += 1;
       }
       // -- Pared inferior
       if (this.y > 400 - 5) {
@@ -267,6 +264,8 @@ function main()
   raqueta.draw();
   puntuacion.init(ctx);
   puntuacion.draw();
+  bolafake.init(ctx);
+  bolafake.draw();
   red();
 
   // -- Crear timer para la animacion
@@ -293,7 +292,7 @@ function main()
 
         // -- Dibujar la bola
         bola.draw()
-        balefake.draw()
+        bolafake.draw()
         raqueta.draw()
         puntuacion.draw()
         red()
