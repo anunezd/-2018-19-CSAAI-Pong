@@ -1,2 +1,4 @@
 # 2018-19-CSAAI-Pong
-https://anunezd.github.io/2018-19-CSAAI-Pong/pong.html
+1. https://anunezd.github.io/2018-19-CSAAI-Pong/pong.html
+
+2. https://anunezd.github.io/2018-19-CSAAI-Pong/pongmodi.html
